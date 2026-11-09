@@ -1,7 +1,12 @@
 {
-    "key.pvputility.open": "Open PvP Utility Menu",
+    "key.pvputility.open_gui": "Open ZenUtility Menu",
+    "key.pvputility.open": "Open ZenUtility Menu",
     "key.pvputility.toggle_hitcolor": "Toggle Custom Hit Color",
     "key.pvputility.toggle_totempop": "Toggle Custom Totem Pop Color",
     "key.pvputility.cycle_hitcolor": "Cycle Hit Color Preset",
-    "key.pvputility.cycle_totempop": "Cycle Totem Pop Preset"
+    "key.pvputility.cycle_totempop": "Cycle Totem Pop Preset",
+    "key.pvputility.toggle_low_dura": "Toggle Low Durability Protection",
+    "key.category.zenutility.main": "ZenUtility",
+    "key.category.zenutility": "ZenUtility",
+    "key.categories.zenutility": "ZenUtility"
 }
