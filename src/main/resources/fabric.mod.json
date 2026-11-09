@@ -3,8 +3,8 @@
     "id": "pvputility",
     "version": "${version}",
     "name": "PvP Utility",
-    "description": "PvP Utility Mod - Custom Enchantment Glint, Dropped Item Scaling & Invsee Stats HUD",
-    "authors": ["Zentrix"],
+    "description": "Essential PvP visual enhancements and utility tools.",
+    "authors": ["PvP Utility Team"],
     "contact": {},
     "license": "MIT",
     "icon": "assets/pvputility/icon.png",
@@ -17,8 +17,8 @@
     ],
     "depends": {
         "fabricloader": ">=0.16.0",
-        "minecraft": ">=26.2",
-        "java": ">=25",
+        "minecraft": ">=1.21.11",
+        "java": ">=21",
         "fabric-api": "*"
     }
 }

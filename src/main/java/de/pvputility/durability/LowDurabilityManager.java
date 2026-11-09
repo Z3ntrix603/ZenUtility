@@ -136,16 +136,16 @@ public class LowDurabilityManager {
 
     public void sendOverlayMessage(Component component) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc != null && mc.gui != null && mc.gui.hud != null) {
-            mc.gui.hud.setOverlayMessage(component, false);
+        if (mc != null && mc.gui != null) {
+            mc.gui.setOverlayMessage(component, false);
         }
     }
 
     public void showTitles(Component title, Component subtitle) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc != null && mc.gui != null && mc.gui.hud != null) {
-            mc.gui.hud.setTitle(title);
-            mc.gui.hud.setSubtitle(subtitle);
+        if (mc != null && mc.gui != null) {
+            mc.gui.setTitle(title);
+            mc.gui.setSubtitle(subtitle);
         }
     }
 

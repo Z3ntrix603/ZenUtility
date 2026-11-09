@@ -7,7 +7,7 @@ import de.pvputility.hud.InvseeCounterConfig;
 import de.pvputility.scale.ItemScaleConfig;
 import de.pvputility.totem.TotemPopColorManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -494,22 +494,22 @@ public class PvPUtilityScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float delta) {
-        extractor.fill(0, 0, this.width, this.height, COLOR_BACKDROP);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+        guiGraphics.fill(0, 0, this.width, this.height, COLOR_BACKDROP);
 
         int winX = (this.width - WIN_WIDTH) / 2;
         int winY = (this.height - WIN_HEIGHT) / 2;
 
-        drawRoundedBox(extractor, winX, winY, WIN_WIDTH, WIN_HEIGHT, COLOR_WIN_BG, COLOR_WIN_BORDER);
+        drawRoundedBox(guiGraphics, winX, winY, WIN_WIDTH, WIN_HEIGHT, COLOR_WIN_BG, COLOR_WIN_BORDER);
 
-        extractor.fill(winX + 2, winY + 2, winX + WIN_WIDTH - 2, winY + HEADER_HEIGHT, COLOR_WIN_HEADER);
-        extractor.fill(winX + 2, winY + HEADER_HEIGHT, winX + WIN_WIDTH - 2, winY + HEADER_HEIGHT + 1, COLOR_WIN_BORDER);
-        extractor.text(this.font, "PvP Utility", winX + 10, winY + 7, COLOR_TEXT_WHITE, true);
+        guiGraphics.fill(winX + 2, winY + 2, winX + WIN_WIDTH - 2, winY + HEADER_HEIGHT, COLOR_WIN_HEADER);
+        guiGraphics.fill(winX + 2, winY + HEADER_HEIGHT, winX + WIN_WIDTH - 2, winY + HEADER_HEIGHT + 1, COLOR_WIN_BORDER);
+        guiGraphics.drawString(this.font, "PvP Utility", winX + 10, winY + 7, COLOR_TEXT_WHITE, true);
 
         // Sidebar Background
         int sidebarY = winY + HEADER_HEIGHT + 1;
-        extractor.fill(winX + 2, sidebarY, winX + SIDEBAR_WIDTH, winY + WIN_HEIGHT - 2, COLOR_SIDEBAR_BG);
-        extractor.fill(winX + SIDEBAR_WIDTH, sidebarY, winX + SIDEBAR_WIDTH + 1, winY + WIN_HEIGHT - 2, COLOR_WIN_BORDER);
+        guiGraphics.fill(winX + 2, sidebarY, winX + SIDEBAR_WIDTH, winY + WIN_HEIGHT - 2, COLOR_SIDEBAR_BG);
+        guiGraphics.fill(winX + SIDEBAR_WIDTH, sidebarY, winX + SIDEBAR_WIDTH + 1, winY + WIN_HEIGHT - 2, COLOR_WIN_BORDER);
 
         // Sidebar Tabs
         Tab[] tabs = Tab.values();
@@ -521,62 +521,62 @@ public class PvPUtilityScreen extends Screen {
             boolean isHov = mouseX >= winX + 4 && mouseX < winX + SIDEBAR_WIDTH - 4 && mouseY >= ty && mouseY < ty + tabH;
 
             int bg = isSel ? COLOR_SIDEBAR_SELECTED : (isHov ? COLOR_SIDEBAR_ITEM : COLOR_SIDEBAR_BG);
-            drawRoundedBox(extractor, winX + 4, ty, SIDEBAR_WIDTH - 8, tabH, bg, isSel ? COLOR_ACCENT : COLOR_WIN_BORDER);
+            drawRoundedBox(guiGraphics, winX + 4, ty, SIDEBAR_WIDTH - 8, tabH, bg, isSel ? COLOR_ACCENT : COLOR_WIN_BORDER);
 
             int textColor = isSel ? COLOR_TEXT_WHITE : (isHov ? COLOR_CYAN : COLOR_TEXT_GRAY);
-            extractor.text(this.font, t.displayName, winX + 8, ty + 5, textColor, isSel);
+            guiGraphics.drawString(this.font, t.displayName, winX + 8, ty + 5, textColor, isSel);
         }
 
         int contentX = winX + SIDEBAR_WIDTH + 12;
         int contentY = winY + HEADER_HEIGHT + 6;
-        extractor.text(this.font, activeTab.displayName, contentX, contentY + 2, COLOR_TEXT_WHITE, true);
+        guiGraphics.drawString(this.font, activeTab.displayName, contentX, contentY + 2, COLOR_TEXT_WHITE, true);
 
         if (activeTab == Tab.GLINT) {
-            renderGlintContent(extractor, contentX, contentY);
+            renderGlintContent(guiGraphics, contentX, contentY);
         } else if (activeTab == Tab.HIT_COLOR) {
-            renderHitColorContent(extractor, contentX, contentY);
+            renderHitColorContent(guiGraphics, contentX, contentY);
         } else if (activeTab == Tab.TOTEM_POP) {
-            renderTotemPopContent(extractor, contentX, contentY);
+            renderTotemPopContent(guiGraphics, contentX, contentY);
         } else if (activeTab == Tab.DURABILITY) {
-            renderDurabilityContent(extractor, contentX, contentY);
+            renderDurabilityContent(guiGraphics, contentX, contentY);
         } else if (activeTab == Tab.SCALE) {
-            renderScaleContent(extractor, contentX, contentY);
+            renderScaleContent(guiGraphics, contentX, contentY);
         } else if (activeTab == Tab.INVSEE) {
-            renderInvseeContent(extractor, contentX, contentY);
+            renderInvseeContent(guiGraphics, contentX, contentY);
         }
 
         int statusY = winY + WIN_HEIGHT - 16;
-        extractor.text(this.font, statusMessage, contentX, statusY, COLOR_SUCCESS, true);
+        guiGraphics.drawString(this.font, statusMessage, contentX, statusY, COLOR_SUCCESS, true);
 
-        super.extractRenderState(extractor, mouseX, mouseY, delta);
+        super.render(guiGraphics, mouseX, mouseY, delta);
     }
 
-    private void renderGlintContent(GuiGraphicsExtractor extractor, int contentX, int contentY) {
-        extractor.text(this.font, "1:1 Vanilla-Glint Farbfilter:", contentX, contentY + 35, COLOR_TEXT_GRAY, false);
+    private void renderGlintContent(GuiGraphics guiGraphics, int contentX, int contentY) {
+        guiGraphics.drawString(this.font, "1:1 Vanilla-Glint Farbfilter:", contentX, contentY + 35, COLOR_TEXT_GRAY, false);
 
         int customY = contentY + 114;
-        extractor.text(this.font, "Custom HEX:", contentX, customY + 3, COLOR_TEXT_WHITE, false);
+        guiGraphics.drawString(this.font, "Custom HEX:", contentX, customY + 3, COLOR_TEXT_WHITE, false);
 
         EnchantGlintManager glint = EnchantGlintManager.getInstance();
         int previewX = contentX + 160;
         int previewY = contentY + 10;
         int previewSize = 36;
-        drawRoundedBox(extractor, previewX, previewY, previewSize, previewSize, COLOR_SLOT_BG, COLOR_ACCENT);
+        drawRoundedBox(guiGraphics, previewX, previewY, previewSize, previewSize, COLOR_SLOT_BG, COLOR_ACCENT);
 
         ItemStack sword = Items.NETHERITE_SWORD.getDefaultInstance();
-        extractor.fakeItem(sword, previewX + 10, previewY + 10);
+        guiGraphics.renderFakeItem(sword, previewX + 10, previewY + 10);
 
         int colorRgb = glint.getCustomColorRgb();
         int colorPreview = 0xFF000000 | colorRgb;
-        extractor.fill(contentX + 200, customY, contentX + 215, customY + 15, colorPreview);
-        drawRoundedBox(extractor, contentX + 200, customY, 15, 15, 0x00000000, COLOR_TEXT_WHITE);
+        guiGraphics.fill(contentX + 200, customY, contentX + 215, customY + 15, colorPreview);
+        drawRoundedBox(guiGraphics, contentX + 200, customY, 15, 15, 0x00000000, COLOR_TEXT_WHITE);
     }
 
-    private void renderHitColorContent(GuiGraphicsExtractor extractor, int contentX, int contentY) {
-        extractor.text(this.font, "Schadens-Flash Farbe (Damage Indicator):", contentX, contentY + 35, COLOR_TEXT_GRAY, false);
+    private void renderHitColorContent(GuiGraphics guiGraphics, int contentX, int contentY) {
+        guiGraphics.drawString(this.font, "Schadens-Flash Farbe (Damage Indicator):", contentX, contentY + 35, COLOR_TEXT_GRAY, false);
 
         int customY = contentY + 114;
-        extractor.text(this.font, "Custom HEX:", contentX, customY + 3, COLOR_TEXT_WHITE, false);
+        guiGraphics.drawString(this.font, "Custom HEX:", contentX, customY + 3, COLOR_TEXT_WHITE, false);
 
         HitColorManager hit = HitColorManager.getInstance();
         int previewX = contentX + 160;
@@ -584,21 +584,21 @@ public class PvPUtilityScreen extends Screen {
         int previewSize = 36;
         int hitColor = 0xFF000000 | hit.getEffectiveColorRgb();
 
-        drawRoundedBox(extractor, previewX, previewY, previewSize, previewSize, COLOR_SLOT_BG, hitColor);
-        extractor.fill(previewX + 4, previewY + 4, previewX + previewSize - 4, previewY + previewSize - 4, (0xB2 << 24) | (hitColor & 0xFFFFFF));
-        extractor.text(this.font, "HIT!", previewX + 8, previewY + 14, COLOR_TEXT_WHITE, true);
+        drawRoundedBox(guiGraphics, previewX, previewY, previewSize, previewSize, COLOR_SLOT_BG, hitColor);
+        guiGraphics.fill(previewX + 4, previewY + 4, previewX + previewSize - 4, previewY + previewSize - 4, (0xB2 << 24) | (hitColor & 0xFFFFFF));
+        guiGraphics.drawString(this.font, "HIT!", previewX + 8, previewY + 14, COLOR_TEXT_WHITE, true);
 
-        extractor.fill(contentX + 200, customY, contentX + 215, customY + 15, hitColor);
-        drawRoundedBox(extractor, contentX + 200, customY, 15, 15, 0x00000000, COLOR_TEXT_WHITE);
+        guiGraphics.fill(contentX + 200, customY, contentX + 215, customY + 15, hitColor);
+        drawRoundedBox(guiGraphics, contentX + 200, customY, 15, 15, 0x00000000, COLOR_TEXT_WHITE);
 
-        extractor.text(this.font, "Hotkey: [H] (in Steuerungs-Settings änderbar)", contentX, contentY + 155, COLOR_TEXT_GRAY, false);
+        guiGraphics.drawString(this.font, "Hotkey: [H] (in Steuerungs-Settings änderbar)", contentX, contentY + 155, COLOR_TEXT_GRAY, false);
     }
 
-    private void renderTotemPopContent(GuiGraphicsExtractor extractor, int contentX, int contentY) {
-        extractor.text(this.font, "Totem Pop Partikel- & Flash-Farbe:", contentX, contentY + 35, COLOR_TEXT_GRAY, false);
+    private void renderTotemPopContent(GuiGraphics guiGraphics, int contentX, int contentY) {
+        guiGraphics.drawString(this.font, "Totem Pop Partikel- & Flash-Farbe:", contentX, contentY + 35, COLOR_TEXT_GRAY, false);
 
         int customY = contentY + 114;
-        extractor.text(this.font, "Custom HEX:", contentX, customY + 3, COLOR_TEXT_WHITE, false);
+        guiGraphics.drawString(this.font, "Custom HEX:", contentX, customY + 3, COLOR_TEXT_WHITE, false);
 
         TotemPopColorManager pop = TotemPopColorManager.getInstance();
         int previewX = contentX + 160;
@@ -607,66 +607,66 @@ public class PvPUtilityScreen extends Screen {
         float[] rgb = pop.getCurrentColorRgbFloat();
         int previewColor = 0xFF000000 | (((int)(rgb[0] * 255)) << 16) | (((int)(rgb[1] * 255)) << 8) | ((int)(rgb[2] * 255));
 
-        drawRoundedBox(extractor, previewX, previewY, previewSize, previewSize, COLOR_SLOT_BG, previewColor);
-        extractor.fakeItem(Items.TOTEM_OF_UNDYING.getDefaultInstance(), previewX + 10, previewY + 10);
+        drawRoundedBox(guiGraphics, previewX, previewY, previewSize, previewSize, COLOR_SLOT_BG, previewColor);
+        guiGraphics.renderFakeItem(Items.TOTEM_OF_UNDYING.getDefaultInstance(), previewX + 10, previewY + 10);
 
-        extractor.fill(contentX + 200, customY, contentX + 215, customY + 15, previewColor);
-        drawRoundedBox(extractor, contentX + 200, customY, 15, 15, 0x00000000, COLOR_TEXT_WHITE);
+        guiGraphics.fill(contentX + 200, customY, contentX + 215, customY + 15, previewColor);
+        drawRoundedBox(guiGraphics, contentX + 200, customY, 15, 15, 0x00000000, COLOR_TEXT_WHITE);
 
-        extractor.text(this.font, "Hotkey: [J] (in Steuerungs-Settings änderbar)", contentX, contentY + 155, COLOR_TEXT_GRAY, false);
+        guiGraphics.drawString(this.font, "Hotkey: [J] (in Steuerungs-Settings änderbar)", contentX, contentY + 155, COLOR_TEXT_GRAY, false);
     }
 
-    private void renderDurabilityContent(GuiGraphicsExtractor extractor, int contentX, int contentY) {
+    private void renderDurabilityContent(GuiGraphics guiGraphics, int contentX, int contentY) {
         LowDurabilityManager dura = LowDurabilityManager.getInstance();
-        extractor.text(this.font, "Warnung & Abbau-Stopp ab: §e" + dura.getThreshold() + " Dura", contentX, contentY + 36, COLOR_TEXT_WHITE, false);
+        guiGraphics.drawString(this.font, "Warnung & Abbau-Stopp ab: §e" + dura.getThreshold() + " Dura", contentX, contentY + 36, COLOR_TEXT_WHITE, false);
 
         int cardX = contentX + 148;
         int cardY = contentY + 16;
         int cardW = 92;
         int cardH = 92;
-        drawRoundedBox(extractor, cardX, cardY, cardW, cardH, 0xF2090E18, 0xFF1E293B);
-        extractor.fill(cardX + 1, cardY + 1, cardX + cardW - 1, cardY + 17, 0xFF0B1220);
-        extractor.fill(cardX + 1, cardY + 17, cardX + cardW - 1, cardY + 18, 0xFF1E293B);
-        extractor.text(this.font, "HELD TOOL", cardX + 8, cardY + 5, 0xFF38BDF8, true);
+        drawRoundedBox(guiGraphics, cardX, cardY, cardW, cardH, 0xF2090E18, 0xFF1E293B);
+        guiGraphics.fill(cardX + 1, cardY + 1, cardX + cardW - 1, cardY + 17, 0xFF0B1220);
+        guiGraphics.fill(cardX + 1, cardY + 17, cardX + cardW - 1, cardY + 18, 0xFF1E293B);
+        guiGraphics.drawString(this.font, "HELD TOOL", cardX + 8, cardY + 5, 0xFF38BDF8, true);
 
         Minecraft mc = Minecraft.getInstance();
         if (mc != null && mc.player != null) {
             ItemStack held = mc.player.getMainHandItem();
             if (held != null && !held.isEmpty()) {
-                extractor.fakeItem(held, cardX + 38, cardY + 24);
+                guiGraphics.renderFakeItem(held, cardX + 38, cardY + 24);
                 int rem = dura.getRemainingDurability(held);
                 if (rem >= 0) {
                     int max = held.getMaxDamage();
                     int duraColor = (rem <= dura.getThreshold()) ? 0xFFFF4444 : 0xFF4ADE80;
                     String dStr = rem + " / " + max;
                     int dw = this.font.width(dStr);
-                    extractor.text(this.font, dStr, cardX + (cardW - dw) / 2, cardY + 48, duraColor, false);
+                    guiGraphics.drawString(this.font, dStr, cardX + (cardW - dw) / 2, cardY + 48, duraColor, false);
 
                     String statusText = (rem <= dura.getThreshold() && dura.isEnabled() && dura.isBlockMining()) ? "⛔ BLOCKIERT" : "✓ SICHER";
                     int stColor = (rem <= dura.getThreshold()) ? 0xFFFF4444 : 0xFF4ADE80;
                     int stw = this.font.width(statusText);
-                    extractor.text(this.font, statusText, cardX + (cardW - stw) / 2, cardY + 66, stColor, true);
+                    guiGraphics.drawString(this.font, statusText, cardX + (cardW - stw) / 2, cardY + 66, stColor, true);
                 } else {
                     String noDura = "Keine Dura";
                     int nw = this.font.width(noDura);
-                    extractor.text(this.font, noDura, cardX + (cardW - nw) / 2, cardY + 50, COLOR_TEXT_GRAY, false);
+                    guiGraphics.drawString(this.font, noDura, cardX + (cardW - nw) / 2, cardY + 50, COLOR_TEXT_GRAY, false);
                 }
             } else {
                 String empty = "Kein Item";
                 int ew = this.font.width(empty);
-                extractor.text(this.font, empty, cardX + (cardW - ew) / 2, cardY + 50, COLOR_TEXT_GRAY, false);
+                guiGraphics.drawString(this.font, empty, cardX + (cardW - ew) / 2, cardY + 50, COLOR_TEXT_GRAY, false);
             }
         }
     }
 
-    private void renderScaleContent(GuiGraphicsExtractor extractor, int contentX, int contentY) {
+    private void renderScaleContent(GuiGraphics guiGraphics, int contentX, int contentY) {
         int listY = contentY + 60;
         ItemScaleConfig cfg = ItemScaleConfig.getInstance();
         List<Map.Entry<String, Float>> entries = new ArrayList<>(cfg.getItemScales().entrySet());
 
         if (entries.isEmpty()) {
-            extractor.text(this.font, "Keine Items konfiguriert.", contentX, listY + 10, COLOR_TEXT_GRAY, false);
-            extractor.text(this.font, "Füge oben Items hinzu (z.B. mace, totem).", contentX, listY + 24, COLOR_TEXT_GRAY, false);
+            guiGraphics.drawString(this.font, "Keine Items konfiguriert.", contentX, listY + 10, COLOR_TEXT_GRAY, false);
+            guiGraphics.drawString(this.font, "Füge oben Items hinzu (z.B. mace, totem).", contentX, listY + 24, COLOR_TEXT_GRAY, false);
             return;
         }
 
@@ -682,20 +682,20 @@ public class PvPUtilityScreen extends Screen {
 
             Item item = BuiltInRegistries.ITEM.getValue(Identifier.tryParse("minecraft:" + itemKey));
             if (item != null) {
-                extractor.fakeItem(item.getDefaultInstance(), contentX, iy - 2);
+                guiGraphics.renderFakeItem(item.getDefaultInstance(), contentX, iy - 2);
             }
 
             String displayKey = formatItemName(itemKey);
-            extractor.text(this.font, displayKey, contentX + 20, iy + 2, COLOR_TEXT_WHITE, false);
-            extractor.text(this.font, String.format(Locale.ROOT, "%.1fx", scale), contentX + 148, iy + 2, COLOR_CYAN, true);
+            guiGraphics.drawString(this.font, displayKey, contentX + 20, iy + 2, COLOR_TEXT_WHITE, false);
+            guiGraphics.drawString(this.font, String.format(Locale.ROOT, "%.1fx", scale), contentX + 148, iy + 2, COLOR_CYAN, true);
         }
 
         if (entries.size() > visibleCount) {
-            extractor.text(this.font, "Mausrad zum Scrollen", contentX, contentY + 164, COLOR_TEXT_GRAY, false);
+            guiGraphics.drawString(this.font, "Mausrad zum Scrollen", contentX, contentY + 164, COLOR_TEXT_GRAY, false);
         }
     }
 
-    private void renderInvseeContent(GuiGraphicsExtractor extractor, int contentX, int contentY) {
+    private void renderInvseeContent(GuiGraphics guiGraphics, int contentX, int contentY) {
         int listY = contentY + 60;
         InvseeCounterConfig cfg = InvseeCounterConfig.getInstance();
         List<Map.Entry<String, Boolean>> entries = new ArrayList<>(cfg.getTrackedItems().entrySet());
@@ -711,15 +711,15 @@ public class PvPUtilityScreen extends Screen {
 
             Item item = BuiltInRegistries.ITEM.getValue(Identifier.tryParse("minecraft:" + itemKey));
             if (item != null) {
-                extractor.fakeItem(item.getDefaultInstance(), contentX, iy - 2);
+                guiGraphics.renderFakeItem(item.getDefaultInstance(), contentX, iy - 2);
             }
 
             String displayKey = formatItemName(itemKey);
-            extractor.text(this.font, displayKey, contentX + 20, iy + 2, COLOR_TEXT_WHITE, false);
+            guiGraphics.drawString(this.font, displayKey, contentX + 20, iy + 2, COLOR_TEXT_WHITE, false);
         }
 
         if (entries.size() > visibleCount) {
-            extractor.text(this.font, "Mausrad zum Scrollen", contentX, contentY + 164, COLOR_TEXT_GRAY, false);
+            guiGraphics.drawString(this.font, "Mausrad zum Scrollen", contentX, contentY + 164, COLOR_TEXT_GRAY, false);
         }
 
         int cardX = contentX + 146;
@@ -733,19 +733,19 @@ public class PvPUtilityScreen extends Screen {
 
         if (!activeKeys.isEmpty()) {
             int cardH = 22 + Math.min(activeKeys.size(), 6) * 18;
-            drawRoundedBox(extractor, cardX, cardY, cardW, cardH, 0xF2090E18, 0xFF1E293B);
-            extractor.fill(cardX + 1, cardY + 1, cardX + cardW - 1, cardY + 17, 0xFF0B1220);
-            extractor.fill(cardX + 1, cardY + 17, cardX + cardW - 1, cardY + 18, 0xFF1E293B);
-            extractor.text(this.font, "INV STATS", cardX + 8, cardY + 5, 0xFF38BDF8, true);
+            drawRoundedBox(guiGraphics, cardX, cardY, cardW, cardH, 0xF2090E18, 0xFF1E293B);
+            guiGraphics.fill(cardX + 1, cardY + 1, cardX + cardW - 1, cardY + 17, 0xFF0B1220);
+            guiGraphics.fill(cardX + 1, cardY + 17, cardX + cardW - 1, cardY + 18, 0xFF1E293B);
+            guiGraphics.drawString(this.font, "INV STATS", cardX + 8, cardY + 5, 0xFF38BDF8, true);
 
             int ry = cardY + 21;
             for (int i = 0; i < Math.min(activeKeys.size(), 6); i++) {
                 String k = activeKeys.get(i);
                 Item it = BuiltInRegistries.ITEM.getValue(Identifier.tryParse("minecraft:" + k));
                 if (it != null) {
-                    extractor.fakeItem(it.getDefaultInstance(), cardX + 5, ry);
+                    guiGraphics.renderFakeItem(it.getDefaultInstance(), cardX + 5, ry);
                 }
-                extractor.text(this.font, "x64", cardX + 26, ry + 4, 0xFFFFD700, true);
+                guiGraphics.drawString(this.font, "x64", cardX + 26, ry + 4, 0xFFFFD700, true);
                 ry += 18;
             }
         }
@@ -764,15 +764,15 @@ public class PvPUtilityScreen extends Screen {
         return res;
     }
 
-    private void drawRoundedBox(GuiGraphicsExtractor extractor, int x, int y, int w, int h, int bg, int border) {
-        extractor.fill(x + 1, y, x + w - 1, y + h, bg);
-        extractor.fill(x, y + 1, x + 1, y + h - 1, bg);
-        extractor.fill(x + w - 1, y + 1, x + w, y + h - 1, bg);
+    private void drawRoundedBox(GuiGraphics guiGraphics, int x, int y, int w, int h, int bg, int border) {
+        guiGraphics.fill(x + 1, y, x + w - 1, y + h, bg);
+        guiGraphics.fill(x, y + 1, x + 1, y + h - 1, bg);
+        guiGraphics.fill(x + w - 1, y + 1, x + w, y + h - 1, bg);
 
-        extractor.fill(x + 1, y, x + w - 1, y + 1, border);
-        extractor.fill(x + 1, y + h - 1, x + w - 1, y + h, border);
-        extractor.fill(x, y + 1, x + 1, y + h - 1, border);
-        extractor.fill(x + w - 1, y + 1, x + w, y + h - 1, border);
+        guiGraphics.fill(x + 1, y, x + w - 1, y + 1, border);
+        guiGraphics.fill(x + 1, y + h - 1, x + w - 1, y + h, border);
+        guiGraphics.fill(x, y + 1, x + 1, y + h - 1, border);
+        guiGraphics.fill(x + w - 1, y + 1, x + w, y + h - 1, border);
     }
 
     @Override

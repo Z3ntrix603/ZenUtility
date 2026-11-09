@@ -9,10 +9,10 @@ import de.pvputility.scale.ItemScaleConfig;
 import de.pvputility.totem.TotemPopColorManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -45,42 +45,42 @@ public class PvPUtilityMod implements ClientModInitializer {
         InvseeCounterHud.init();
 
         // Register Keybindings (Configurable in Minecraft Controls -> Key Binds)
-        openGuiKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        openGuiKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.open",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_U,
                 KeyMapping.Category.MISC
         ));
 
-        toggleHitColorKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        toggleHitColorKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.toggle_hitcolor",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_H,
                 KeyMapping.Category.MISC
         ));
 
-        toggleTotemPopKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        toggleTotemPopKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.toggle_totempop",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_J,
                 KeyMapping.Category.MISC
         ));
 
-        cycleHitColorKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        cycleHitColorKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.cycle_hitcolor",
                 InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),
                 KeyMapping.Category.MISC
         ));
 
-        cycleTotemPopKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        cycleTotemPopKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.cycle_totempop",
                 InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),
                 KeyMapping.Category.MISC
         ));
 
-        toggleLowDuraKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        toggleLowDuraKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.toggle_low_dura",
                 InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),
@@ -90,46 +90,46 @@ public class PvPUtilityMod implements ClientModInitializer {
         // Client Tick Handler for Keybinds and Rainbow ticks
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openGuiKey.consumeClick()) {
-                if (client.gui.screen() == null) {
-                    client.setScreenAndShow(new PvPUtilityScreen());
+                if (client.screen == null) {
+                    client.setScreen(new PvPUtilityScreen());
                 }
             }
 
             while (toggleHitColorKey.consumeClick()) {
                 HitColorManager.getInstance().toggle();
                 boolean on = HitColorManager.getInstance().isEnabled();
-                if (client.gui != null && client.gui.hud != null) {
-                    client.gui.hud.setOverlayMessage(Component.literal("§b[PvP Utility] §fHit Color: " + (on ? "§aAKTIV (" + HitColorManager.getInstance().getCurrentPreset() + ")" : "§cDEAKTIVIERT")), false);
+                if (client.gui != null) {
+                    client.gui.setOverlayMessage(Component.literal("§b[PvP Utility] §fHit Color: " + (on ? "§aAKTIV (" + HitColorManager.getInstance().getCurrentPreset() + ")" : "§cDEAKTIVIERT")), false);
                 }
             }
 
             while (toggleTotemPopKey.consumeClick()) {
                 TotemPopColorManager.getInstance().toggle();
                 boolean on = TotemPopColorManager.getInstance().isEnabled();
-                if (client.gui != null && client.gui.hud != null) {
-                    client.gui.hud.setOverlayMessage(Component.literal("§b[PvP Utility] §fTotem Pop: " + (on ? "§aAKTIV (" + TotemPopColorManager.getInstance().getCurrentPreset() + ")" : "§cDEAKTIVIERT")), false);
+                if (client.gui != null) {
+                    client.gui.setOverlayMessage(Component.literal("§b[PvP Utility] §fTotem Pop: " + (on ? "§aAKTIV (" + TotemPopColorManager.getInstance().getCurrentPreset() + ")" : "§cDEAKTIVIERT")), false);
                 }
             }
 
             while (cycleHitColorKey.consumeClick()) {
                 HitColorManager.getInstance().cyclePreset();
-                if (client.gui != null && client.gui.hud != null) {
-                    client.gui.hud.setOverlayMessage(Component.literal("§b[PvP Utility] §fHit Color: §e" + HitColorManager.getInstance().getCurrentPreset()), false);
+                if (client.gui != null) {
+                    client.gui.setOverlayMessage(Component.literal("§b[PvP Utility] §fHit Color: §e" + HitColorManager.getInstance().getCurrentPreset()), false);
                 }
             }
 
             while (cycleTotemPopKey.consumeClick()) {
                 TotemPopColorManager.getInstance().cyclePreset();
-                if (client.gui != null && client.gui.hud != null) {
-                    client.gui.hud.setOverlayMessage(Component.literal("§b[PvP Utility] §fTotem Pop: §e" + TotemPopColorManager.getInstance().getCurrentPreset()), false);
+                if (client.gui != null) {
+                    client.gui.setOverlayMessage(Component.literal("§b[PvP Utility] §fTotem Pop: §e" + TotemPopColorManager.getInstance().getCurrentPreset()), false);
                 }
             }
 
             while (toggleLowDuraKey.consumeClick()) {
                 LowDurabilityManager.getInstance().toggle();
                 boolean on = LowDurabilityManager.getInstance().isEnabled();
-                if (client.gui != null && client.gui.hud != null) {
-                    client.gui.hud.setOverlayMessage(Component.literal("§b[PvP Utility] §fDura-Schutz: " + (on ? "§aAKTIV (≤ " + LowDurabilityManager.getInstance().getThreshold() + " Dura)" : "§cDEAKTIVIERT")), false);
+                if (client.gui != null) {
+                    client.gui.setOverlayMessage(Component.literal("§b[PvP Utility] §fDura-Schutz: " + (on ? "§aAKTIV (≤ " + LowDurabilityManager.getInstance().getThreshold() + " Dura)" : "§cDEAKTIVIERT")), false);
                 }
             }
 
@@ -139,15 +139,15 @@ public class PvPUtilityMod implements ClientModInitializer {
 
         // Register Slash Commands: /pvputils and /utility
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            dispatcher.register(ClientCommands.literal("pvputils").executes(ctx -> {
+            dispatcher.register(ClientCommandManager.literal("pvputils").executes(ctx -> {
                 Minecraft.getInstance().execute(() -> {
-                    Minecraft.getInstance().setScreenAndShow(new PvPUtilityScreen());
+                    Minecraft.getInstance().setScreen(new PvPUtilityScreen());
                 });
                 return 1;
             }));
-            dispatcher.register(ClientCommands.literal("utility").executes(ctx -> {
+            dispatcher.register(ClientCommandManager.literal("utility").executes(ctx -> {
                 Minecraft.getInstance().execute(() -> {
-                    Minecraft.getInstance().setScreenAndShow(new PvPUtilityScreen());
+                    Minecraft.getInstance().setScreen(new PvPUtilityScreen());
                 });
                 return 1;
             }));

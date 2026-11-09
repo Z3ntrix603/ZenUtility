@@ -3,7 +3,7 @@ package de.pvputility.hud;
 import de.pvputility.mixin.AbstractContainerScreenAccessor;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -25,14 +25,14 @@ public class InvseeCounterHud {
                     return;
                 }
 
-                ScreenEvents.afterExtract(containerScreen).register((scr, extractor, mouseX, mouseY, delta) -> {
-                    renderHud(containerScreen, extractor);
+                ScreenEvents.afterRender(containerScreen).register((scr, guiGraphics, mouseX, mouseY, delta) -> {
+                    renderHud(containerScreen, guiGraphics);
                 });
             }
         });
     }
 
-    private static void renderHud(AbstractContainerScreen<?> screen, GuiGraphicsExtractor extractor) {
+    private static void renderHud(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics) {
         InvseeCounterConfig cfg = InvseeCounterConfig.getInstance();
         if (!cfg.isEnabled()) return;
 
@@ -70,15 +70,15 @@ public class InvseeCounterHud {
         int cardH = 22 + rowCount * 18;
 
         // Clean Modern Obsidian Background
-        drawRoundedBox(extractor, cardX, cardY, cardW, cardH, 0xF2090E18, 0xFF1E293B);
+        drawRoundedBox(guiGraphics, cardX, cardY, cardW, cardH, 0xF2090E18, 0xFF1E293B);
 
         // Header bar
-        extractor.fill(cardX + 1, cardY + 1, cardX + cardW - 1, cardY + 17, 0xFF0B1220);
-        extractor.fill(cardX + 1, cardY + 17, cardX + cardW - 1, cardY + 18, 0xFF1E293B);
+        guiGraphics.fill(cardX + 1, cardY + 1, cardX + cardW - 1, cardY + 17, 0xFF0B1220);
+        guiGraphics.fill(cardX + 1, cardY + 17, cardX + cardW - 1, cardY + 18, 0xFF1E293B);
 
         // Header text
         Minecraft mc = Minecraft.getInstance();
-        extractor.text(mc.font, "INV STATS", cardX + 8, cardY + 5, 0xFF38BDF8, true);
+        guiGraphics.drawString(mc.font, "INV STATS", cardX + 8, cardY + 5, 0xFF38BDF8, true);
 
         // Rows
         int rowY = cardY + 21;
@@ -88,24 +88,24 @@ public class InvseeCounterHud {
 
             Item item = BuiltInRegistries.ITEM.getValue(Identifier.tryParse("minecraft:" + itemKey));
             if (item != null) {
-                extractor.fakeItem(item.getDefaultInstance(), cardX + 5, rowY);
+                guiGraphics.renderFakeItem(item.getDefaultInstance(), cardX + 5, rowY);
             }
 
             String countText = "x" + count;
             int color = count > 0 ? 0xFFFFD700 : 0xFF64748B;
-            extractor.text(mc.font, countText, cardX + 26, rowY + 4, color, true);
+            guiGraphics.drawString(mc.font, countText, cardX + 26, rowY + 4, color, true);
             rowY += 18;
         }
     }
 
-    private static void drawRoundedBox(GuiGraphicsExtractor extractor, int x, int y, int w, int h, int bg, int border) {
-        extractor.fill(x + 1, y, x + w - 1, y + h, bg);
-        extractor.fill(x, y + 1, x + 1, y + h - 1, bg);
-        extractor.fill(x + w - 1, y + 1, x + w, y + h - 1, bg);
+    private static void drawRoundedBox(GuiGraphics guiGraphics, int x, int y, int w, int h, int bg, int border) {
+        guiGraphics.fill(x + 1, y, x + w - 1, y + h, bg);
+        guiGraphics.fill(x, y + 1, x + 1, y + h - 1, bg);
+        guiGraphics.fill(x + w - 1, y + 1, x + w, y + h - 1, bg);
 
-        extractor.fill(x + 1, y, x + w - 1, y + 1, border);
-        extractor.fill(x + 1, y + h - 1, x + w - 1, y + h, border);
-        extractor.fill(x, y + 1, x + 1, y + h - 1, border);
-        extractor.fill(x + w - 1, y + 1, x + w, y + h - 1, border);
+        guiGraphics.fill(x + 1, y, x + w - 1, y + 1, border);
+        guiGraphics.fill(x + 1, y + h - 1, x + w - 1, y + h, border);
+        guiGraphics.fill(x, y + 1, x + 1, y + h - 1, border);
+        guiGraphics.fill(x + w - 1, y + 1, x + w, y + h - 1, border);
     }
 }
