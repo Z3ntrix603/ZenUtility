@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "de.pvputility.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+  ],
+  "client": [
+    "AbstractContainerScreenAccessor",
+    "ItemEntityRenderStateMixin",
+    "ItemEntityRendererMixin",
+    "MultiPlayerGameModeMixin",
+    "OverlayTextureAccessor",
+    "OverlayTextureMixin",
+    "TotemParticleMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
