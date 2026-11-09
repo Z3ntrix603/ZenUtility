@@ -78,7 +78,7 @@ public class PvPUtilityScreen extends Screen {
     private int invseeScroll = 0;
 
     public PvPUtilityScreen() {
-        super(Component.literal("PvP Utility"));
+        super(Component.literal("ZenUtility"));
     }
 
     @Override
@@ -504,7 +504,7 @@ public class PvPUtilityScreen extends Screen {
 
         guiGraphics.fill(winX + 2, winY + 2, winX + WIN_WIDTH - 2, winY + HEADER_HEIGHT, COLOR_WIN_HEADER);
         guiGraphics.fill(winX + 2, winY + HEADER_HEIGHT, winX + WIN_WIDTH - 2, winY + HEADER_HEIGHT + 1, COLOR_WIN_BORDER);
-        guiGraphics.drawString(this.font, "PvP Utility", winX + 10, winY + 7, COLOR_TEXT_WHITE, true);
+        guiGraphics.drawString(this.font, "ZenUtility", winX + 10, winY + 7, COLOR_TEXT_WHITE, true);
 
         // Sidebar Background
         int sidebarY = winY + HEADER_HEIGHT + 1;
