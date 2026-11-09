@@ -1,4 +1,4 @@
-﻿# ZenUtility (formerly PvPUtility) âš¡
+# ZenUtility (formerly PvPUtility)
 
 > **ZenUtility** is a modern Minecraft Fabric client utility & quality-of-life mod featuring custom visual indicators, tool protection, dropped item scaling, inventory counters, and customizable settings.
 
@@ -8,7 +8,7 @@
 
 ---
 
-## âœ¨ Features
+## Features
 
 - **Low Durability Tool Protection:** Warns when holding tools under 10 durability (customizable threshold, sound, and screen title) and cancels block mining to prevent tools from breaking.
 - **Custom Damage Flash (Hit Color):** Fully customizable damage flash indicator (Red, Gold, Cyan, Purple, Rainbow, or any custom HEX code).
@@ -20,18 +20,18 @@
 
 ---
 
-## âŒ¨ï¸ Controls & Keybinds
+## Controls & Keybinds
 
 | Action | Default Key | Configurable in Settings |
 |---|---|---|
-| Open Utility GUI | `U` | Yes (Controls â†’ Key Binds) |
+| Open Utility GUI | `U` | Yes (Controls -> Key Binds) |
 | Toggle Hit Color | `H` | Yes |
 | Toggle Totem Pop Color | `J` | Yes |
 | Toggle Dura Protection | Not bound by default | Yes |
 
 ---
 
-## ðŸ› ï¸ Building from Source
+## Building from Source
 
 ### Prerequisites
 - **JDK 21+**
@@ -47,5 +47,5 @@ The compiled `.jar` file will be located in `build/libs/`.
 
 ---
 
-## ðŸ“œ License
+## License
 This project is licensed under the [MIT License](LICENSE).
