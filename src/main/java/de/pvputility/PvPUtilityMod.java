@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,10 @@ public class PvPUtilityMod implements ClientModInitializer {
 
     public static final String MOD_ID = "pvputility";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+    public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
+            Identifier.fromNamespaceAndPath("zenutility", "main")
+    );
 
     private static KeyMapping openGuiKey;
     private static KeyMapping toggleHitColorKey;
@@ -34,7 +39,7 @@ public class PvPUtilityMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        LOGGER.info("PvP Utility initializing...");
+        LOGGER.info("ZenUtility initializing...");
 
         // Load configs
         ItemScaleConfig.getInstance();
@@ -44,47 +49,47 @@ public class PvPUtilityMod implements ClientModInitializer {
         LowDurabilityManager.getInstance();
         InvseeCounterHud.init();
 
-        // Register Keybindings (Configurable in Minecraft Controls -> Key Binds)
+        // Register Keybindings in custom dedicated ZenUtility category
         openGuiKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-                "key.pvputility.open",
+                "key.pvputility.open_gui",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_U,
-                KeyMapping.Category.MISC
+                CATEGORY
         ));
 
         toggleHitColorKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.toggle_hitcolor",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_H,
-                KeyMapping.Category.MISC
+                CATEGORY
         ));
 
         toggleTotemPopKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.toggle_totempop",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_J,
-                KeyMapping.Category.MISC
+                CATEGORY
         ));
 
         cycleHitColorKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.cycle_hitcolor",
                 InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),
-                KeyMapping.Category.MISC
+                CATEGORY
         ));
 
         cycleTotemPopKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.cycle_totempop",
                 InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),
-                KeyMapping.Category.MISC
+                CATEGORY
         ));
 
         toggleLowDuraKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.pvputility.toggle_low_dura",
                 InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),
-                KeyMapping.Category.MISC
+                CATEGORY
         ));
 
         // Client Tick Handler for Keybinds and Rainbow ticks
@@ -99,7 +104,7 @@ public class PvPUtilityMod implements ClientModInitializer {
                 HitColorManager.getInstance().toggle();
                 boolean on = HitColorManager.getInstance().isEnabled();
                 if (client.gui != null) {
-                    client.gui.setOverlayMessage(Component.literal("§b[PvP Utility] §fHit Color: " + (on ? "§aAKTIV (" + HitColorManager.getInstance().getCurrentPreset() + ")" : "§cDEAKTIVIERT")), false);
+                    client.gui.setOverlayMessage(Component.literal("§d[ZenUtility] §fHit Color: " + (on ? "§aAKTIV (" + HitColorManager.getInstance().getCurrentPreset() + ")" : "§cDEAKTIVIERT")), false);
                 }
             }
 
@@ -107,21 +112,21 @@ public class PvPUtilityMod implements ClientModInitializer {
                 TotemPopColorManager.getInstance().toggle();
                 boolean on = TotemPopColorManager.getInstance().isEnabled();
                 if (client.gui != null) {
-                    client.gui.setOverlayMessage(Component.literal("§b[PvP Utility] §fTotem Pop: " + (on ? "§aAKTIV (" + TotemPopColorManager.getInstance().getCurrentPreset() + ")" : "§cDEAKTIVIERT")), false);
+                    client.gui.setOverlayMessage(Component.literal("§d[ZenUtility] §fTotem Pop: " + (on ? "§aAKTIV (" + TotemPopColorManager.getInstance().getCurrentPreset() + ")" : "§cDEAKTIVIERT")), false);
                 }
             }
 
             while (cycleHitColorKey.consumeClick()) {
                 HitColorManager.getInstance().cyclePreset();
                 if (client.gui != null) {
-                    client.gui.setOverlayMessage(Component.literal("§b[PvP Utility] §fHit Color: §e" + HitColorManager.getInstance().getCurrentPreset()), false);
+                    client.gui.setOverlayMessage(Component.literal("§d[ZenUtility] §fHit Color: §e" + HitColorManager.getInstance().getCurrentPreset()), false);
                 }
             }
 
             while (cycleTotemPopKey.consumeClick()) {
                 TotemPopColorManager.getInstance().cyclePreset();
                 if (client.gui != null) {
-                    client.gui.setOverlayMessage(Component.literal("§b[PvP Utility] §fTotem Pop: §e" + TotemPopColorManager.getInstance().getCurrentPreset()), false);
+                    client.gui.setOverlayMessage(Component.literal("§d[ZenUtility] §fTotem Pop: §e" + TotemPopColorManager.getInstance().getCurrentPreset()), false);
                 }
             }
 
@@ -129,7 +134,7 @@ public class PvPUtilityMod implements ClientModInitializer {
                 LowDurabilityManager.getInstance().toggle();
                 boolean on = LowDurabilityManager.getInstance().isEnabled();
                 if (client.gui != null) {
-                    client.gui.setOverlayMessage(Component.literal("§b[PvP Utility] §fDura-Schutz: " + (on ? "§aAKTIV (≤ " + LowDurabilityManager.getInstance().getThreshold() + " Dura)" : "§cDEAKTIVIERT")), false);
+                    client.gui.setOverlayMessage(Component.literal("§d[ZenUtility] §fDura-Schutz: " + (on ? "§aAKTIV (≤ " + LowDurabilityManager.getInstance().getThreshold() + " Dura)" : "§cDEAKTIVIERT")), false);
                 }
             }
 
@@ -137,9 +142,15 @@ public class PvPUtilityMod implements ClientModInitializer {
             LowDurabilityManager.getInstance().tick(client);
         });
 
-        // Register Slash Commands: /pvputils and /utility
+        // Register Slash Commands: /pvputils, /zen, and /utility
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(ClientCommandManager.literal("pvputils").executes(ctx -> {
+                Minecraft.getInstance().execute(() -> {
+                    Minecraft.getInstance().setScreen(new PvPUtilityScreen());
+                });
+                return 1;
+            }));
+            dispatcher.register(ClientCommandManager.literal("zen").executes(ctx -> {
                 Minecraft.getInstance().execute(() -> {
                     Minecraft.getInstance().setScreen(new PvPUtilityScreen());
                 });
@@ -153,6 +164,6 @@ public class PvPUtilityMod implements ClientModInitializer {
             }));
         });
 
-        LOGGER.info("PvP Utility initialized successfully.");
+        LOGGER.info("ZenUtility initialized successfully.");
     }
 }
