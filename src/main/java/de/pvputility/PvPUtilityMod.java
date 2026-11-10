@@ -5,6 +5,9 @@ import de.pvputility.glint.EnchantGlintManager;
 import de.pvputility.gui.PvPUtilityScreen;
 import de.pvputility.hitcolor.HitColorManager;
 import de.pvputility.hud.InvseeCounterHud;
+import de.pvputility.lyrics.LyricsConfig;
+import de.pvputility.lyrics.LyricsManager;
+import de.pvputility.lyrics.LyricsRenderer;
 import de.pvputility.scale.ItemScaleConfig;
 import de.pvputility.totem.TotemPopColorManager;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -13,6 +16,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -36,18 +40,26 @@ public class PvPUtilityMod implements ClientModInitializer {
     private static KeyMapping cycleHitColorKey;
     private static KeyMapping cycleTotemPopKey;
     private static KeyMapping toggleLowDuraKey;
+    private static KeyMapping toggleLyricsKey;
 
     @Override
     public void onInitializeClient() {
         LOGGER.info("ZenUtility initializing...");
 
-        // Load configs
+        // Load configs & Managers
         ItemScaleConfig.getInstance();
         EnchantGlintManager.getInstance();
         HitColorManager.getInstance();
         TotemPopColorManager.getInstance();
         LowDurabilityManager.getInstance();
+        LyricsManager.getInstance();
         InvseeCounterHud.init();
+
+        // Register In-Game HUD Elements
+        HudElementRegistry.addLast(
+                Identifier.fromNamespaceAndPath(MOD_ID, "lyrics"),
+                new LyricsRenderer()
+        );
 
         // Register Keybindings in custom dedicated ZenUtility category
         openGuiKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
@@ -87,6 +99,13 @@ public class PvPUtilityMod implements ClientModInitializer {
 
         toggleLowDuraKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.pvputility.toggle_low_dura",
+                InputConstants.Type.KEYSYM,
+                InputConstants.UNKNOWN.getValue(),
+                CATEGORY
+        ));
+
+        toggleLyricsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.pvputility.toggle_lyrics",
                 InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),
                 CATEGORY
@@ -138,11 +157,19 @@ public class PvPUtilityMod implements ClientModInitializer {
                 }
             }
 
+            while (toggleLyricsKey.consumeClick()) {
+                LyricsConfig.getInstance().setEnabled(!LyricsConfig.getInstance().isEnabled());
+                boolean on = LyricsConfig.getInstance().isEnabled();
+                if (client.gui != null && client.gui.hud != null) {
+                    client.gui.hud.setOverlayMessage(Component.literal("§d[ZenUtility] §fSong Lyrics: " + (on ? "§aAKTIV" : "§cDEAKTIVIERT")), false);
+                }
+            }
+
             HitColorManager.getInstance().tick();
             LowDurabilityManager.getInstance().tick(client);
         });
 
-        // Register Slash Commands: /pvputils, /zen, and /utility
+        // Register Slash Commands: /pvputils, /zen, /utility, and /lyrics
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(ClientCommands.literal("pvputils").executes(ctx -> {
                 Minecraft.getInstance().execute(() -> {
@@ -159,6 +186,14 @@ public class PvPUtilityMod implements ClientModInitializer {
             dispatcher.register(ClientCommands.literal("utility").executes(ctx -> {
                 Minecraft.getInstance().execute(() -> {
                     Minecraft.getInstance().setScreenAndShow(new PvPUtilityScreen());
+                });
+                return 1;
+            }));
+            dispatcher.register(ClientCommands.literal("lyrics").executes(ctx -> {
+                Minecraft.getInstance().execute(() -> {
+                    PvPUtilityScreen scr = new PvPUtilityScreen();
+                    scr.setActiveTab(PvPUtilityScreen.Tab.LYRICS);
+                    Minecraft.getInstance().setScreenAndShow(scr);
                 });
                 return 1;
             }));

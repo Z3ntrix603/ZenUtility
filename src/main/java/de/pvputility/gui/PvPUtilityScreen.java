@@ -6,6 +6,10 @@ import de.pvputility.hitcolor.HitColorManager;
 import de.pvputility.hud.InvseeCounterConfig;
 import de.pvputility.scale.ItemScaleConfig;
 import de.pvputility.totem.TotemPopColorManager;
+import de.pvputility.lyrics.LyricsConfig;
+import de.pvputility.lyrics.LyricsManager;
+import de.pvputility.lyrics.LrclibClient;
+import de.pvputility.lyrics.SpotifyDetector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -45,11 +49,12 @@ public class PvPUtilityScreen extends Screen {
     private static final int COLOR_TEXT_GRAY = 0xFF94A3B8;
     private static final int COLOR_SUCCESS = 0xFF4ADE80;
 
-    private enum Tab {
+    public enum Tab {
         GLINT("Enchant Glint"),
         HIT_COLOR("Hit Color"),
         TOTEM_POP("Totem Pop"),
         DURABILITY("Low Dura"),
+        LYRICS("Song Lyrics"),
         SCALE("Dropped Scale"),
         INVSEE("Invsee Stats");
 
@@ -76,6 +81,10 @@ public class PvPUtilityScreen extends Screen {
     // Invsee tab
     private EditBox searchInvseeBox;
     private int invseeScroll = 0;
+
+    public void setActiveTab(Tab tab) {
+        this.activeTab = tab;
+    }
 
     public PvPUtilityScreen() {
         super(Component.literal("ZenUtility"));
@@ -111,6 +120,8 @@ public class PvPUtilityScreen extends Screen {
             buildDurabilityUI(contentX, contentY, contentW);
         } else if (activeTab == Tab.SCALE) {
             buildScaleUI(contentX, contentY, contentW);
+        } else if (activeTab == Tab.LYRICS) {
+            buildLyricsUI(contentX, contentY, contentW);
         } else if (activeTab == Tab.INVSEE) {
             buildInvseeUI(contentX, contentY, contentW);
         }
@@ -541,6 +552,8 @@ public class PvPUtilityScreen extends Screen {
             renderDurabilityContent(extractor, contentX, contentY);
         } else if (activeTab == Tab.SCALE) {
             renderScaleContent(extractor, contentX, contentY);
+        } else if (activeTab == Tab.LYRICS) {
+            renderLyricsContent(extractor, contentX, contentY);
         } else if (activeTab == Tab.INVSEE) {
             renderInvseeContent(extractor, contentX, contentY);
         }
@@ -798,6 +811,166 @@ public class PvPUtilityScreen extends Screen {
         }
 
         return super.mouseClicked(event, isDouble);
+    }
+
+    private void buildLyricsUI(int contentX, int contentY, int contentW) {
+        LyricsConfig cfg = LyricsConfig.getInstance();
+        LyricsManager mgr = LyricsManager.getInstance();
+
+        // Row 1: Toggle & Mode
+        String toggleText = "Lyrics: " + (cfg.isEnabled() ? "§a[AKTIV]" : "§c[AUS]");
+        this.addRenderableWidget(Button.builder(Component.literal(toggleText), b -> {
+            cfg.setEnabled(!cfg.isEnabled());
+            statusMessage = cfg.isEnabled() ? "Lyrics aktiviert!" : "Lyrics deaktiviert.";
+            rebuildUI();
+        }).bounds(contentX, contentY + 16, 100, 16).build());
+
+        String modeText = "Modus: " + (cfg.isInAirMode() ? "§b[3D In-Air]" : "§e[2D HUD]");
+        this.addRenderableWidget(Button.builder(Component.literal(modeText), b -> {
+            cfg.setInAirMode(!cfg.isInAirMode());
+            statusMessage = cfg.isInAirMode() ? "3D Schwebend aktiv!" : "2D HUD aktiv!";
+            rebuildUI();
+        }).bounds(contentX + 104, contentY + 16, 104, 16).build());
+
+        // Row 2: Color Presets
+        int presetY = contentY + 36;
+        int btnW = 34;
+        int btnH = 14;
+        int col = 0;
+        for (String pName : LyricsConfig.PRESETS.keySet()) {
+            boolean isSel = pName.equalsIgnoreCase(cfg.getActivePreset());
+            int bx = contentX + col * (btnW + 2);
+            String label = (isSel ? "§b" : "") + pName.substring(0, Math.min(3, pName.length()));
+            this.addRenderableWidget(Button.builder(Component.literal(label), b -> {
+                cfg.setActivePreset(pName);
+                statusMessage = "Farbe: " + pName;
+                rebuildUI();
+            }).bounds(bx, presetY, btnW, btnH).build());
+            col++;
+            if (col >= 6) break;
+        }
+
+        // Row 3: In-Air Distance & Height Steppers
+        int stepY = contentY + 54;
+        this.addRenderableWidget(Button.builder(Component.literal("§c-"), b -> {
+            cfg.setInAirDistance(cfg.getInAirDistance() - 0.5f);
+            rebuildUI();
+        }).bounds(contentX + 68, stepY, 15, 14).build());
+
+        this.addRenderableWidget(Button.builder(Component.literal("§a+"), b -> {
+            cfg.setInAirDistance(cfg.getInAirDistance() + 0.5f);
+            rebuildUI();
+        }).bounds(contentX + 85, stepY, 15, 14).build());
+
+        this.addRenderableWidget(Button.builder(Component.literal("§c-"), b -> {
+            cfg.setInAirHeight(cfg.getInAirHeight() - 0.1f);
+            rebuildUI();
+        }).bounds(contentX + 172, stepY, 15, 14).build());
+
+        this.addRenderableWidget(Button.builder(Component.literal("§a+"), b -> {
+            cfg.setInAirHeight(cfg.getInAirHeight() + 0.1f);
+            rebuildUI();
+        }).bounds(contentX + 189, stepY, 15, 14).build());
+
+        // Row 4: Smooth Inertia Toggle & Card Background Toggle
+        int optY = contentY + 72;
+        String inertiaText = "Trailing: " + (cfg.isSmoothInertia() ? "§a[Sanft]" : "§7[Starr]");
+        this.addRenderableWidget(Button.builder(Component.literal(inertiaText), b -> {
+            cfg.setSmoothInertia(!cfg.isSmoothInertia());
+            rebuildUI();
+        }).bounds(contentX, optY, 100, 15).build());
+
+        String bgText = "Hintergrund: " + (cfg.isShowBackground() ? "§a[AN]" : "§cAUS");
+        this.addRenderableWidget(Button.builder(Component.literal(bgText), b -> {
+            cfg.setShowBackground(!cfg.isShowBackground());
+            rebuildUI();
+        }).bounds(contentX + 104, optY, 104, 15).build());
+
+        // Row 5: Sync Offset Stepper & Reset
+        int syncY = contentY + 91;
+        this.addRenderableWidget(Button.builder(Component.literal("§c-0.5s"), b -> {
+            mgr.adjustOffset(-0.5f);
+            statusMessage = String.format("Offset: %.1fs", cfg.getSyncOffsetSeconds());
+            rebuildUI();
+        }).bounds(contentX + 60, syncY, 40, 14).build());
+
+        this.addRenderableWidget(Button.builder(Component.literal("§a+0.5s"), b -> {
+            mgr.adjustOffset(0.5f);
+            statusMessage = String.format("Offset: %.1fs", cfg.getSyncOffsetSeconds());
+            rebuildUI();
+        }).bounds(contentX + 102, syncY, 40, 14).build());
+
+        this.addRenderableWidget(Button.builder(Component.literal("↺ 0s"), b -> {
+            cfg.setSyncOffsetSeconds(0.0f);
+            statusMessage = "Offset zurückgesetzt.";
+            rebuildUI();
+        }).bounds(contentX + 144, syncY, 32, 14).build());
+
+        // Row 6: Demo Song & Play/Pause
+        int demoY = contentY + 110;
+        this.addRenderableWidget(Button.builder(Component.literal("▶ Demo Song"), b -> {
+            mgr.loadDemoSong();
+            statusMessage = "Demo Song geladen!";
+            rebuildUI();
+        }).bounds(contentX, demoY, 100, 16).build());
+
+        String playPauseText = mgr.isPlaying() ? "⏸ Pausieren" : "▶ Play";
+        this.addRenderableWidget(Button.builder(Component.literal(playPauseText), b -> {
+            mgr.togglePlayPause();
+            statusMessage = mgr.isPlaying() ? "Fortgesetzt." : "Pausiert.";
+            rebuildUI();
+        }).bounds(contentX + 104, demoY, 104, 16).build());
+    }
+
+    private void renderLyricsContent(GuiGraphicsExtractor extractor, int contentX, int contentY) {
+        LyricsConfig cfg = LyricsConfig.getInstance();
+        LyricsManager mgr = LyricsManager.getInstance();
+
+        extractor.text(this.font, "Spotify Floating Lyrics:", contentX, contentY + 2, COLOR_TEXT_WHITE, true);
+
+        // Distance & Height labels
+        int stepY = contentY + 57;
+        extractor.text(this.font, String.format("Dist: %.1fm", cfg.getInAirDistance()), contentX, stepY, COLOR_TEXT_GRAY, false);
+        extractor.text(this.font, String.format("Höhe: %+.1fm", cfg.getInAirHeight()), contentX + 112, stepY, COLOR_TEXT_GRAY, false);
+
+        // Sync Offset label
+        int syncY = contentY + 94;
+        extractor.text(this.font, String.format("Sync: %+.1fs", cfg.getSyncOffsetSeconds()), contentX, syncY, COLOR_TEXT_GRAY, false);
+
+        // Live Spotify Inspector Box
+        int boxY = contentY + 130;
+        int boxW = WIN_WIDTH - SIDEBAR_WIDTH - 24;
+        int boxH = 46;
+        drawRoundedBox(extractor, contentX, boxY, boxW, boxH, COLOR_SLOT_BG, COLOR_WIN_BORDER);
+
+        SpotifyDetector.TrackInfo track = mgr.getCurrentTrack();
+        if (track != null) {
+            String status = track.isPlaying ? "§a● Spotify: §f" + track.artist + " - " + track.title 
+                                            : "§e⏸ Pausiert: §7" + track.artist + " - " + track.title;
+            if (this.font.width(status) > boxW - 10) {
+                status = this.font.plainSubstrByWidth(status, boxW - 16) + "...";
+            }
+            extractor.text(this.font, status, contentX + 6, boxY + 6, COLOR_TEXT_WHITE, false);
+
+            LrclibClient.LyricsResult l = mgr.getCurrentLyrics();
+            if (l != null && !l.lines.isEmpty()) {
+                int lineIdx = mgr.getCurrentLineIndex();
+                String lineText = l.lines.get(lineIdx).text;
+                if (lineText.isEmpty()) lineText = "♪  ♪  ♪";
+                int color = cfg.getEffectiveColorRgb() | 0xFF000000;
+                extractor.text(this.font, "▶ " + lineText, contentX + 6, boxY + 20, color, false);
+
+                long pos = mgr.getCurrentPositionMs();
+                long dur = l.durationMs;
+                String timeStr = String.format("%02d:%02d / %02d:%02d", (pos / 60000), (pos % 60000) / 1000, (dur / 60000), (dur % 60000) / 1000);
+                extractor.text(this.font, timeStr, contentX + 6, boxY + 32, COLOR_TEXT_GRAY, false);
+            } else {
+                extractor.text(this.font, "§7Suche Lyrics auf LRCLIB...", contentX + 6, boxY + 20, COLOR_TEXT_GRAY, false);
+            }
+        } else {
+            extractor.text(this.font, "§7○ Kein Spotify erkannt (Desktop-App starten)", contentX + 6, boxY + 8, COLOR_TEXT_GRAY, false);
+            extractor.text(this.font, "§8Tipp: Klicke oben auf 'Demo Song' zum Testen!", contentX + 6, boxY + 24, COLOR_TEXT_GRAY, false);
+        }
     }
 
     @Override
