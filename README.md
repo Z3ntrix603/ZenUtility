@@ -1,4 +1,4 @@
-# ZenUtility (formerly PvPUtility)
+# ZenUtility
 
 > **ZenUtility** is a modern Minecraft Fabric client utility & quality-of-life mod featuring custom visual indicators, tool protection, dropped item scaling, inventory counters, and customizable settings.
 
