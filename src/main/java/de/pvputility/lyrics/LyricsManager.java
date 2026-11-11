@@ -24,6 +24,9 @@ public class LyricsManager {
     private long pausedAtPositionMs = 0;
     private String lastFetchedKey = "";
 
+    private long lastLineChangeTimestamp = System.currentTimeMillis();
+    private int lastLineIndex = -1;
+
     // 3D In-Air Lerp Coordinates
     public double currentInAirX = 0;
     public double currentInAirY = 0;
@@ -103,6 +106,26 @@ public class LyricsManager {
         isPlaying = true;
         playbackStartTime = System.currentTimeMillis();
         pausedAtPositionMs = 0;
+        lastLineChangeTimestamp = System.currentTimeMillis();
+        lastLineIndex = 0;
+    }
+
+    public void loadAestheticDemoSong() {
+        List<LrclibClient.LyricLine> lines = new ArrayList<>();
+        lines.add(new LrclibClient.LyricLine(0, "Will you even love me anymore?"));
+        lines.add(new LrclibClient.LyricLine(4200, "I feel you slipping through my hands"));
+        lines.add(new LrclibClient.LyricLine(8500, "Lost in the static in the dark"));
+        lines.add(new LrclibClient.LyricLine(12800, "Underneath the starless sky"));
+        lines.add(new LrclibClient.LyricLine(17200, "Will you remember who we were?"));
+
+        currentTrack = new SpotifyDetector.TrackInfo("Snøw & Joji", "Love Me Anymore", true);
+        currentLyrics = new LrclibClient.LyricsResult("Love Me Anymore", "Snøw", 180000, lines, true);
+        lastFetchedKey = "snøw - love me anymore";
+        isPlaying = true;
+        playbackStartTime = System.currentTimeMillis();
+        pausedAtPositionMs = 0;
+        lastLineChangeTimestamp = System.currentTimeMillis();
+        lastLineIndex = 0;
     }
 
     public long getRawPlaybackPositionMs() {
@@ -142,14 +165,26 @@ public class LyricsManager {
         long pos = getCurrentPositionMs();
         List<LrclibClient.LyricLine> lines = currentLyrics.lines;
 
-        if (pos < lines.get(0).timeMs) return 0;
-
-        for (int i = lines.size() - 1; i >= 0; i--) {
-            if (pos >= lines.get(i).timeMs) {
-                return i;
+        int found = 0;
+        if (pos >= lines.get(0).timeMs) {
+            for (int i = lines.size() - 1; i >= 0; i--) {
+                if (pos >= lines.get(i).timeMs) {
+                    found = i;
+                    break;
+                }
             }
         }
-        return 0;
+
+        if (found != lastLineIndex) {
+            lastLineIndex = found;
+            lastLineChangeTimestamp = System.currentTimeMillis();
+        }
+
+        return found;
+    }
+
+    public long getLastLineChangeTimestamp() {
+        return lastLineChangeTimestamp;
     }
 
     public SpotifyDetector.TrackInfo getCurrentTrack() { return currentTrack; }
