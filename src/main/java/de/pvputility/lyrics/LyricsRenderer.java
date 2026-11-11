@@ -31,7 +31,9 @@ public class LyricsRenderer implements HudElement {
         int renderY;
         float distanceScale = 1.0f;
 
-        if (cfg.isInAirMode()) {
+        if (cfg.isInAirMode()) return;
+
+        if (false) {
             // Camera position and orientation
             double camX = mc.player.getX();
             double camY = mc.player.getEyeY();

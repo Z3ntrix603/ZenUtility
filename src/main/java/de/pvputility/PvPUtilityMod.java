@@ -8,6 +8,8 @@ import de.pvputility.hud.InvseeCounterHud;
 import de.pvputility.lyrics.LyricsConfig;
 import de.pvputility.lyrics.LyricsManager;
 import de.pvputility.lyrics.LyricsRenderer;
+import de.pvputility.lyrics.LyricsWorldRenderer;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import de.pvputility.scale.ItemScaleConfig;
 import de.pvputility.totem.TotemPopColorManager;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -60,6 +62,9 @@ public class PvPUtilityMod implements ClientModInitializer {
                 Identifier.fromNamespaceAndPath(MOD_ID, "lyrics"),
                 new LyricsRenderer()
         );
+
+        // Register 3D In-Air World Renderer
+        WorldRenderEvents.AFTER_ENTITIES.register(LyricsWorldRenderer::render3D);
 
         // Register Keybindings in custom dedicated ZenUtility category
         openGuiKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(

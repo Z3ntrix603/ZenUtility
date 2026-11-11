@@ -17,9 +17,9 @@ public class LyricsConfig {
 
     public static final Map<String, Integer> PRESETS = new LinkedHashMap<>();
     static {
+        PRESETS.put("Pink", 0xFFFF66B2);
         PRESETS.put("Cyan", 0x00E5FF);
         PRESETS.put("Gold", 0xFFD700);
-        PRESETS.put("Pink", 0xFF69B4);
         PRESETS.put("Emerald", 0x50C878);
         PRESETS.put("Purple", 0xA855F7);
         PRESETS.put("White", 0xFFFFFF);
@@ -28,11 +28,13 @@ public class LyricsConfig {
 
     private boolean enabled = true;
     private boolean inAirMode = true; // true = 3D floating in air ahead of player; false = 2D HUD
-    private float inAirDistance = 3.5f; // meters/blocks in front
-    private float inAirHeight = 0.2f; // vertical height offset
+    private float inAirDistance = 4.0f; // meters/blocks in front
+    private float inAirHeight = 0.5f; // vertical height offset
+    private float textScale = 1.3f; // scale of 3D floating lyrics
+    private boolean seeThrough = true; // whether 3D lyrics are visible through obstacles
     private boolean smoothInertia = true;
-    private String activePreset = "Cyan";
-    private int customColorRgb = 0x00E5FF;
+    private String activePreset = "Pink";
+    private int customColorRgb = 0xFFFF66B2;
     private float syncOffsetSeconds = 0.0f;
     private boolean showTrackInfo = true;
     private boolean showProgressBar = true;
@@ -80,9 +82,18 @@ public class LyricsConfig {
 
     public float getInAirHeight() { return inAirHeight; }
     public void setInAirHeight(float inAirHeight) {
-        this.inAirHeight = Math.max(-1.0f, Math.min(2.0f, inAirHeight));
+        this.inAirHeight = Math.max(-1.0f, Math.min(3.0f, inAirHeight));
         save();
     }
+
+    public float getTextScale() { return textScale; }
+    public void setTextScale(float textScale) {
+        this.textScale = Math.max(0.5f, Math.min(3.0f, textScale));
+        save();
+    }
+
+    public boolean isSeeThrough() { return seeThrough; }
+    public void setSeeThrough(boolean seeThrough) { this.seeThrough = seeThrough; save(); }
 
     public boolean isSmoothInertia() { return smoothInertia; }
     public void setSmoothInertia(boolean smoothInertia) { this.smoothInertia = smoothInertia; save(); }
